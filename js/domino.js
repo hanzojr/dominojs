@@ -1,5 +1,5 @@
 var
-    LARGURA = 1366, ALTURA = 768, TAMANHO_PONTO = 5,
+    LARGURA = 1366, ALTURA = 768, TAMANHO_PEDRA = 70,
     canvas, context, frames = 0, pedras, pedraClicada = 0, mouseX=100, mouseY=100, rect ,
 
 cores = {
@@ -23,9 +23,9 @@ pedras = {
                 this._pedra.push({
                     lado1: i,
                     lado2: j,
-                    vertical: true 
+                    vertical: true,
+                    jogador: 0
                 });
-        
     },
 
     gerarHorizontal: function() {
@@ -36,26 +36,90 @@ pedras = {
                 this._pedra.push({
                     lado1: i,
                     lado2: j,
-                    vertical: false 
+                    vertical: false,
+                    x: 0,
+                    y: 0 
                 });
         
-    },    
+    }, 
+    
+    distribuirPedras: function() {
+    
+        for(jogador=0;jogador<4;jogador++) {
+    //        console.log("Jogador: "+(jogador+1));
+            for(i=0;i<7;i++) {
+                while(this._pedra[rand = Math.floor(28 * Math.random())].jogador!=0);              
+                this._pedra[rand].jogador = jogador;
+
+//                console.log("  Pedra: "+rand);
+
+            }
+        }
+    },
+
+    arrumarMao: function() {
+        context.font = "30px Arial";
+        context.fillStyle = "red";
+
+        
+        context.textAlign = "center";        
+
+
+        s= 500;
+        for(i=0; i<28; i++) {
+
+            if(pedras._pedra[i].jogador == 2) {
+                x = pedras._pedra[i].x = s;
+                y = pedras._pedra[i].y = 680
+                this.draw(i, x, y);            
+
+                    s+=70;
+            }
+            // else   
+            //     console.log("jogador "+pedras._pedra[i].jogador)
+        }
+
+        // for(jogador=0;jogador<4; jogador++) {
+        //     context.fillText("Jogador "+(jogador+1), 100, 50+(jogador*170));
+        //     //console.log(jogador);
+
+        //     var s;
+
+        //      for(i=0;i<7;i++) {
+        //          s+=i + ", "
+                 
+        //     //     draw(i, 100+(i*100), 50+(jogador*170));
+        //      }
+        //      console.log(s)
+
+        // }
+
+    },
 
     draw: function(i) {
-        radius = 10;
-        tamanho = 100;
 
-        if(this._pedra[i].vertical) {
-            height = tamanho;
-            width = height/2;
-        }
-        else {
-            width = tamanho;
-            height = width/2;
-        }
 
         x = mouseX - width/2;
         y = mouseY - height/2;  
+
+        draw(i, x, y)
+    },
+
+    draw: function(i, x, y) {
+
+        radius = TAMANHO_PEDRA * 0.10;
+        TAMANHO_PONTO = TAMANHO_PEDRA * 0.05;
+
+        if(this._pedra[i].vertical) {
+            height = TAMANHO_PEDRA;
+            width = height/2;
+        }
+        else {
+            width = TAMANHO_PEDRA;
+            height = width/2;
+        }
+
+
 
         context.fillStyle = cores.pedra; 
 
@@ -77,7 +141,6 @@ pedras = {
 
         //linha do meio      
         context.beginPath();
-        //context.fillStyle = cores.centro;
         context.lineWidth = 2;
         context.strokeStyle = cores.centro;
         if(this._pedra[i].vertical) {
@@ -97,7 +160,7 @@ pedras = {
         //circulo do meio
         context.beginPath();
         context.fillStyle = cores.centro;
-        context.arc(x + width/2  , y + height/2 , 3, 0, 2 * Math.PI, false);
+        context.arc(x + width/2  , y + height/2 , TAMANHO_PEDRA * 0.03, 0, 2 * Math.PI, false);
         context.fill();
         context.closePath();
 
@@ -401,6 +464,10 @@ function main() {
 
     pedras.gerar();
 
+    pedras.distribuirPedras();
+
+
+
     run();
 
 }
@@ -423,7 +490,9 @@ function draw() {
     context.fillStyle = cores.mesa;
     context.fillRect(0, 0, LARGURA, ALTURA);
 
-    pedras.draw(pedraClicada); 
+//    pedras.draw(pedraClicada); 
+
+    pedras.arrumarMao();
 
 
 }
