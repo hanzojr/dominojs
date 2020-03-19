@@ -70,18 +70,17 @@ function draw() {
     context.fillStyle = cores.mesa;
     context.fillRect(0, 0, LARGURA, ALTURA);
 
-   // pedras.draw(pedraClicada); 
-
-   pedras.arrumarMao();
-
  //  new Controle().draw();
 
-    new Pedra(6,6).draw(100, 100);
+
+    //new Pedra(6,6).draw(100, 100);
 
    // new Pedra();
 
 
   //  drawControle();
+
+    mesa.showPedras();
 
     
 

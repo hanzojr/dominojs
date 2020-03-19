@@ -28,5 +28,11 @@ class Mesa {
     }
 
 
+    showPedras() {
+        for(let i=0;i<28;i++)
+            this.pedras[i].draw(i * (TAMANHO_PEDRA/2 + TAMANHO_PEDRA * 0.1), 600);
+    }
+
+
 
 }
