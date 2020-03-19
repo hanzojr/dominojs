@@ -1,0 +1,6 @@
+class Jogador {
+    nome;
+
+    pedras = [];
+
+}

@@ -1,17 +1,3 @@
-var
-    LARGURA = 1366, ALTURA = 768, TAMANHO_PEDRA = 70,
-    canvas, context, frames = 0, pedras, pedraClicada = 0, mouseX=100, mouseY=100, rect ,
-
-cores = {
-    mesa: "green",
-    pedra: "#ffffcc",
-    //pedra: "black",
-    ponto: "black",
-    centro: "gray"
-},
-
-
-
 pedras = {
     _pedra: [],
 
@@ -68,12 +54,12 @@ pedras = {
         s= 500;
         for(i=0; i<28; i++) {
 
-            if(pedras._pedra[i].jogador == 2) {
+            if(pedras._pedra[i].jogador == 1) {
                 x = pedras._pedra[i].x = s;
-                y = pedras._pedra[i].y = 680
+                y = pedras._pedra[i].y = 100
                 this.draw(i, x, y);            
 
-                    s+=70;
+                    s+=TAMANHO_PEDRA/2 + TAMANHO_PEDRA*0.1;
             }
             // else   
             //     console.log("jogador "+pedras._pedra[i].jogador)
@@ -135,14 +121,15 @@ pedras = {
         context.lineTo(x, y + radius);
         context.quadraticCurveTo(x, y, x + radius, y);
         context.closePath();
-    
+
+        context.strokeStyle = "black";
         context.fill();
         context.stroke();
 
         //linha do meio      
         context.beginPath();
         context.lineWidth = 2;
-        context.strokeStyle = cores.centro;
+        context.strokeStyle = cores.divisao;
         if(this._pedra[i].vertical) {
             context.moveTo(x + width*0.1, y + height/2);
             context.lineTo(x + width - width*0.1, y + height/2);
@@ -416,83 +403,6 @@ pedras = {
         }
     }
 
-
-
-};
-
-    
-function onMouseClick(event) {
-    pedraClicada = Math.floor(27 * Math.random());
-
-    rect = canvas.getBoundingClientRect();
-    
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
-
-    if(pedras._pedra[0].vertical) 
-        pedras.gerarHorizontal();
-    else
-        pedras.gerar();
-
-}
-
-function onMouseMove(event) {
-    
-    rect = canvas.getBoundingClientRect();
-    
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
-}
-
-
-function main() {
-    canvas = document.createElement("canvas");
-    canvas.width = LARGURA;
-    canvas.height = ALTURA;
-    canvas.style.border = "1px solid #000";
-
-    context = canvas.getContext("2d");
-    document.body.appendChild(canvas);
-
-    rect = canvas.getBoundingClientRect();
-
-    
-
-    document.addEventListener("mousedown", onMouseClick);
-    document.addEventListener("mousemove", onMouseMove);
-
-
-    pedras.gerar();
-
-    pedras.distribuirPedras();
-
-
-
-    run();
-
-}
-
-function run() {
-    refresh();
-    draw();
-
-    window.requestAnimationFrame(run);
-
-}
-
-function refresh() {
-    frames++;
-
-
-}
-
-function draw() {
-    context.fillStyle = cores.mesa;
-    context.fillRect(0, 0, LARGURA, ALTURA);
-
-//    pedras.draw(pedraClicada); 
-
-    pedras.arrumarMao();
 
 
 }
