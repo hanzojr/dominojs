@@ -19,8 +19,6 @@ function onMouseMove(event) {
     
     mouseX = event.clientX - rect.left;
     mouseY = event.clientY - rect.top;
-
-
 }
 
 
@@ -73,7 +71,7 @@ function draw() {
  //  new Controle().draw();
 
 
-    //new Pedra(6,6).draw(100, 100);
+    new Pedra(6,6).draw(100, 100);
 
    // new Pedra();
 
@@ -82,6 +80,11 @@ function draw() {
 
     mesa.showPedras();
 
+  
+    context.font = "20px Comic Sans MS";
+    context.fillStyle = "red";
+    context.textAlign = "right";
+    context.fillText("Mouse X: "+mouseX+" / Y: " + mouseY, canvas.width, 20);  
     
 
 

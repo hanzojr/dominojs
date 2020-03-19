@@ -2,7 +2,7 @@ var
 
 LARGURA = 1366, 
 ALTURA = 768, 
-TAMANHO_PEDRA = 50,
+TAMANHO_PEDRA = 100,
 
 cores = {
     mesa: "green",
