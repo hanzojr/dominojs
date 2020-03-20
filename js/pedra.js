@@ -4,6 +4,7 @@ class Pedra {
     lado1;
     lado2;
     vertical;
+    deitada;
 
     width;
     height;
@@ -13,10 +14,16 @@ class Pedra {
 
     tamanho_ponto;
 
+    _radius;
+    _showColisaoArea = false;
+    _showPrevisaoEncaixe = true;
+
+
     constructor(lado1, lado2) {
         this.lado1 = lado1;
         this.lado2 = lado2;
         this.vertical = true;
+        this.deitada = false;
         this.codigo = "["+lado1+"|"+lado2+"]";
         
         this.posicao = new Ponto(0, 0);
@@ -28,6 +35,10 @@ class Pedra {
 
         return this.pegarNomeLado(lado1) +" e " + this.pegarNomeLado(lado2);
 
+    }
+
+    isCarroca() {
+        return (this.lado1 == this.lado2);
     }
 
     pegarNomeLado(_desc) {
@@ -43,7 +54,6 @@ class Pedra {
 
     virar() {
         this.vertical = !this.vertical;   
-        console.log("girar");
     }
 
     click() {
@@ -60,7 +70,7 @@ class Pedra {
     draw() {
 
 
-        let radius = TAMANHO_PEDRA * 0.10;
+        this._radius = TAMANHO_PEDRA * 0.10;
         this.tamanho_ponto = TAMANHO_PEDRA * 0.05;
 
         if(this.vertical) {
@@ -76,26 +86,30 @@ class Pedra {
         context.fillStyle = cores.pedra; 
 
         context.beginPath();
-        context.lineWidth = 1;
-        context.moveTo(this.posicao.x + radius, this.posicao.y);
-        context.lineTo(this.posicao.x + this.width - radius, this.posicao.y);      
-        context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y, this.posicao.x + this.width, this.posicao.y + radius);
-        context.lineTo(this.posicao.x + this.width, this.posicao.y + this.height - radius);
-        context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y + this.height, this.posicao.x + this.width - radius, this.posicao.y + this.height);
-        context.lineTo(this.posicao.x + radius, this.posicao.y + this.height);
-        context.quadraticCurveTo(this.posicao.x, this.posicao.y + this.height, this.posicao.x, this.posicao.y + this.height - radius);
-        context.lineTo(this.posicao.x, this.posicao.y + radius);
-        context.quadraticCurveTo(this.posicao.x, this.posicao.y, this.posicao.x + radius, this.posicao.y);
-        context.closePath();
 
-        context.strokeStyle = "black";
+        context.moveTo(this.posicao.x + this._radius, this.posicao.y);
+        context.lineTo(this.posicao.x + this.width - this._radius, this.posicao.y);      
+        context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y, this.posicao.x + this.width, this.posicao.y + this._radius);
+        context.lineTo(this.posicao.x + this.width, this.posicao.y + this.height - this._radius);
+        context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y + this.height, this.posicao.x + this.width - this._radius, this.posicao.y + this.height);
+        context.lineTo(this.posicao.x + this._radius, this.posicao.y + this.height);
+        context.quadraticCurveTo(this.posicao.x, this.posicao.y + this.height, this.posicao.x, this.posicao.y + this.height - this._radius);
+        context.lineTo(this.posicao.x, this.posicao.y + this._radius);
+        context.quadraticCurveTo(this.posicao.x, this.posicao.y, this.posicao.x + this._radius, this.posicao.y);
+        context.closePath();
         context.fill();
+
+        context.lineWidth = 1;
+        context.setLineDash([1, 0]);
+        context.strokeStyle = "black";
+        
         context.stroke();
 
         //linha do meio      
         context.beginPath();
         context.lineWidth = 2;
         context.strokeStyle = cores.divisao;
+        
 
         if(this.vertical) {
             context.moveTo(this.posicao.x + this.width*0.1, this.posicao.y + this.height/2);
@@ -112,17 +126,210 @@ class Pedra {
         
         
         //circulo do meio
-     //   context.beginPath();
         context.fillStyle = cores.centro;
         context.arc(this.posicao.x + this.width/2  , this.posicao.y + this.height/2 , TAMANHO_PEDRA * 0.03, 0, 2 * Math.PI, false);
         context.fill();
-     //   context.closePath();
+
+        //area de colisao
+        if(this._showColisaoArea) {
+            
+            //inferior
+            context.beginPath();
+            context.moveTo(this.posicao.x, this.posicao.y + this.height);
+            context.lineTo(this.posicao.x + this.width, this.posicao.y + this.height);
+            context.lineTo(this.posicao.x + this.width, this.posicao.y + this.height + AREA_COLISAO);
+            context.lineTo(this.posicao.x, this.posicao.y + this.height + AREA_COLISAO);
+            context.lineTo(this.posicao.x, this.posicao.y + this.height);
+            //context.lineTo(400,400);
+
+            context.setLineDash([5, 5]);
+            context.strokeStyle = "red";
+            context.lineWidth = 1;
+            context.stroke();
+   
+        }
+
+        if(this._showPrevisaoEncaixe)
+            this.drawPrevisaoEncaixe();
+
 
         
         //marcaçoes dos lados
         context.fillStyle = cores.ponto;
         this.drawLado1();
         this.drawLado2();
+
+
+    }
+
+    drawPrevisaoEncaixe() {
+
+        context.fillStyle = cores.encaixe; 
+
+
+        if(!this.isCarroca()) {
+            if(this.vertical) {
+
+                let correcao = -this.height;
+
+                //encaixe em cima
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius, this.posicao.y + correcao);
+                context.lineTo(this.posicao.x + this.width - this._radius, this.posicao.y + correcao);      
+                context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y + correcao, this.posicao.x + this.width, this.posicao.y + this._radius + correcao);
+                context.lineTo(this.posicao.x + this.width, this.posicao.y + this.height - this._radius + correcao);
+                context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y + this.height + correcao, this.posicao.x + this.width - this._radius, this.posicao.y + this.height + correcao);
+                context.lineTo(this.posicao.x + this._radius, this.posicao.y + this.height + correcao);
+                context.quadraticCurveTo(this.posicao.x, this.posicao.y + this.height + correcao, this.posicao.x, this.posicao.y + this.height - this._radius + correcao);
+                context.lineTo(this.posicao.x, this.posicao.y + this._radius + correcao);
+                context.quadraticCurveTo(this.posicao.x, this.posicao.y + correcao, this.posicao.x + this._radius, this.posicao.y + correcao);            
+                context.closePath();
+                context.fill();            
+
+                correcao = this.height;
+                
+                //encaixe em baixo
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius, this.posicao.y + correcao);
+                context.lineTo(this.posicao.x + this.width - this._radius, this.posicao.y + correcao);      
+                context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y + correcao, this.posicao.x + this.width, this.posicao.y + this._radius + correcao);
+                context.lineTo(this.posicao.x + this.width, this.posicao.y + this.height - this._radius + correcao);
+                context.quadraticCurveTo(this.posicao.x + this.width, this.posicao.y + this.height + correcao, this.posicao.x + this.width - this._radius, this.posicao.y + this.height + correcao);
+                context.lineTo(this.posicao.x + this._radius, this.posicao.y + this.height + correcao);
+                context.quadraticCurveTo(this.posicao.x, this.posicao.y + this.height + correcao, this.posicao.x, this.posicao.y + this.height - this._radius + correcao);
+                context.lineTo(this.posicao.x, this.posicao.y + this._radius + correcao);
+                context.quadraticCurveTo(this.posicao.x, this.posicao.y + correcao, this.posicao.x + this._radius, this.posicao.y + correcao);            
+                context.closePath();
+                context.fill();
+            }
+            else { //horizontal
+
+                let correcao = -this.width;
+
+                //encaixe na esquerda
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius + correcao, this.posicao.y);
+                context.lineTo(this.posicao.x + this.width - this._radius + correcao, this.posicao.y);      
+                context.quadraticCurveTo(this.posicao.x + this.width + correcao, this.posicao.y, this.posicao.x + this.width + correcao, this.posicao.y + this._radius);
+                context.lineTo(this.posicao.x + this.width + correcao, this.posicao.y + this.height - this._radius);
+                context.quadraticCurveTo(this.posicao.x + this.width + correcao, this.posicao.y + this.height, this.posicao.x + this.width - this._radius + correcao, this.posicao.y + this.height);
+                context.lineTo(this.posicao.x + this._radius + correcao, this.posicao.y + this.height);
+                context.quadraticCurveTo(this.posicao.x + correcao, this.posicao.y + this.height, this.posicao.x + correcao, this.posicao.y + this.height - this._radius);
+                context.lineTo(this.posicao.x + correcao, this.posicao.y + this._radius);
+                context.quadraticCurveTo(this.posicao.x + correcao, this.posicao.y, this.posicao.x + this._radius + correcao, this.posicao.y);            
+                context.closePath();
+                context.fill();    
+                
+                correcao = this.width;
+
+                //encaixe na direita
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius + correcao, this.posicao.y);
+                context.lineTo(this.posicao.x + this.width - this._radius + correcao, this.posicao.y);      
+                context.quadraticCurveTo(this.posicao.x + this.width + correcao, this.posicao.y, this.posicao.x + this.width + correcao, this.posicao.y + this._radius);
+                context.lineTo(this.posicao.x + this.width + correcao, this.posicao.y + this.height - this._radius);
+                context.quadraticCurveTo(this.posicao.x + this.width + correcao, this.posicao.y + this.height, this.posicao.x + this.width - this._radius + correcao, this.posicao.y + this.height);
+                context.lineTo(this.posicao.x + this._radius + correcao, this.posicao.y + this.height);
+                context.quadraticCurveTo(this.posicao.x + correcao, this.posicao.y + this.height, this.posicao.x + correcao, this.posicao.y + this.height - this._radius);
+                context.lineTo(this.posicao.x + correcao, this.posicao.y + this._radius);
+                context.quadraticCurveTo(this.posicao.x + correcao, this.posicao.y, this.posicao.x + this._radius + correcao, this.posicao.y);            
+                context.closePath();
+                context.fill();                  
+
+
+
+
+            }
+
+        }
+        else { //se for carroça 
+            if(this.vertical) { //carroça na vertical
+
+                let localWidth = this.height;
+                let localHeight = this.width;
+
+                let correcaoX = -localWidth;
+                let correcaoY = localHeight/2;
+
+                //encaixe na esquerda
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);
+                context.lineTo(this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + correcaoY); 
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + correcaoY, this.posicao.x + localWidth + correcaoX, this.posicao.y + this._radius + correcaoY);
+                context.lineTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.lineTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.lineTo(this.posicao.x + correcaoX, this.posicao.y + this._radius+ correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + correcaoY, this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);            
+                context.closePath();
+                context.fill();   
+
+
+                localWidth = this.height;
+                localHeight = this.width;
+
+                correcaoX = localWidth/2;
+                correcaoY = localHeight/2;                
+                
+                //encaixe na direita
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);
+                context.lineTo(this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + correcaoY); 
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + correcaoY, this.posicao.x + localWidth + correcaoX, this.posicao.y + this._radius + correcaoY);
+                context.lineTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.lineTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.lineTo(this.posicao.x + correcaoX, this.posicao.y + this._radius+ correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + correcaoY, this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);            
+                context.closePath();
+                context.fill();                   
+
+            }
+            else { //carroça na  horizontal
+                let localWidth = this.height;
+                let localHeight = this.width;
+
+                let correcaoX = -localWidth;
+                let correcaoY = -localHeight/4;
+
+                //encaixe na esquerda
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);
+                context.lineTo(this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + correcaoY); 
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + correcaoY, this.posicao.x + localWidth + correcaoX, this.posicao.y + this._radius + correcaoY);
+                context.lineTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.lineTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.lineTo(this.posicao.x + correcaoX, this.posicao.y + this._radius+ correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + correcaoY, this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);            
+                context.closePath();
+                context.fill();   
+
+                localWidth = this.height;
+                localHeight = this.width;
+
+                correcaoX = 2*this.height;
+                correcaoY = -localHeight/4;
+
+                //encaixe na esquerda
+                context.beginPath();
+                context.moveTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);
+                context.lineTo(this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + correcaoY); 
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + correcaoY, this.posicao.x + localWidth + correcaoX, this.posicao.y + this._radius + correcaoY);
+                context.lineTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + localWidth + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + localWidth - this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.lineTo(this.posicao.x + this._radius + correcaoX, this.posicao.y + localHeight + correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + localHeight + correcaoY, this.posicao.x + correcaoX, this.posicao.y + localHeight - this._radius + correcaoY);
+                context.lineTo(this.posicao.x + correcaoX, this.posicao.y + this._radius+ correcaoY);
+                context.quadraticCurveTo(this.posicao.x + correcaoX, this.posicao.y + correcaoY, this.posicao.x + this._radius + correcaoX, this.posicao.y + correcaoY);            
+                context.closePath();
+                context.fill();                   
+            }
+
+        }
 
 
     }

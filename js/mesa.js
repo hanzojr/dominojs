@@ -4,7 +4,10 @@ class Mesa {
     pedras = [];
 
     pedraSelecionada;
+    diffX;
+    diffY;
 
+    _showConsole = true;
     // _showPedras = false;
     // _showMousePosition = false;
     // _showPedraPosition = false;
@@ -33,22 +36,27 @@ class Mesa {
     }
 
     checkObjectClick() {
+
+        
          for(let i=0;i<28;i++) {
              if(this.pedras[i].click()) {
                     this.pedraSelecionada = this.pedras[i];
-                    console.log("selecionada: "+this.pedraSelecionada.codigo);
+
+                    this.diffX = this.pedraSelecionada.posicao.x - mouseX;
+                    this.diffY = this.pedraSelecionada.posicao.y - mouseY;
+
              }
          }
     }
 
     checkObjectRelease() {
-        console.log("liberada: "+this.pedraSelecionada.codigo);
         this.pedraSelecionada = null;
     }
 
     checkObjectMove() {
         if(holdMouse)
-            this.pedraSelecionada.posicao = new Ponto(mouseX, mouseY);
+            if(this.pedraSelecionada != null)
+                this.pedraSelecionada.posicao = new Ponto(mouseX + this.diffX, mouseY + this.diffY);
 
     }
 
@@ -58,6 +66,10 @@ class Mesa {
             case "Space": 
                 if(this.pedraSelecionada!= null)
                     this.pedraSelecionada.virar(); 
+                break;
+
+            case "F9":
+                    this._showConsole  = !this._showConsole;
                 break;
 
         }
@@ -96,6 +108,24 @@ class Mesa {
         context.fillStyle = "yellow";
         context.textAlign = "right";
         context.fillText("Pedra "+p.codigo+ " => X: "+p.posicao.x+" | Y: "+p.posicao.y, canvas.width, 50);                
+    }
+
+    showWindowSize() {
+        context.font = "20px Comic Sans MS";
+        context.fillStyle = "yellow";
+        context.textAlign = "right";
+        context.fillText("LARGURA: "+LARGURA+" | ALTURA: "+ALTURA, canvas.width, 80);          
+    }
+
+    showConsole() {
+
+
+        if(this._showConsole) {
+            this.showMousePosition();
+            this.showWindowSize();
+        }
+        else 
+            console.log("nao mostra");
 
     }
 

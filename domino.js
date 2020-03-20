@@ -38,7 +38,11 @@ function onKeyDown(event) {
     mesa.checkKeyDown(event.code);
 }
 
+function onResize() {
+    LARGURA = window.innerWidth;
+    ALTURA = window.innerHeight;
 
+}
 
 
 function domino() {
@@ -47,28 +51,27 @@ function domino() {
     canvas.height = ALTURA;
     canvas.style.border = "1px solid #000";
 
+
     context = canvas.getContext("2d");
     document.body.appendChild(canvas);
 
-    rect = canvas.getBoundingClientRect();
+    //rect = canvas.getBoundingClientRect();
 
-    
+    document.body.style.overflow = 'hidden';    
 
     document.addEventListener("mousedown", onMouseClick);
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
-    document.addEventListener('keydown', onKeyDown);    
+    document.addEventListener('keydown', onKeyDown); 
+    window.addEventListener("resize", onResize);   
 
-
-    // pedras.gerar();
-
-    // pedras.distribuirPedras();
 
 
 
     mesa = new Mesa();
 
     mesa.showPedrasDemo();
+    mesa.pedras[13].posicao.y -= 300;   
 
 
     run();
@@ -93,13 +96,12 @@ function draw() {
     context.fillStyle = cores.mesa;
     context.fillRect(0, 0, LARGURA, ALTURA);
 
-   // new Pedra(6, 6).draw(new Ponto(100, 100));
-
-
     mesa.showPedras();
 
-    mesa.showMousePosition();  
 
+    mesa.showConsole();
+
+    
 
 
 }
