@@ -41,6 +41,21 @@ class Pedra {
         }
     }
 
+    virar() {
+        this.vertical = !this.vertical;   
+        console.log("girar");
+    }
+
+    click() {
+        if(mouseX >= this.posicao.x && 
+            mouseX <= this.posicao.x + this.width &&
+            mouseY >= this.posicao.y && 
+            mouseY <= this.posicao.y + this.height)        
+            return true;
+        else
+            return false;
+    }    
+
 
     draw() {
 

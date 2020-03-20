@@ -1,6 +1,6 @@
 var
     
-    canvas, context, frames = 0, pedras, pedraClicada = 0, mouseX=100, mouseY=100, rect, mesa;
+    canvas, context, frames = 0, pedras, pedraClicada = 0, mouseX=100, mouseY=100, holdMouse=false, mesa;
 
 // const pedra = {
 //     AS: 'Ás',
@@ -12,24 +12,33 @@ var
 // }
 
 function onMouseClick(event) {
-    pedraClicada = Math.floor(27 * Math.random());
+    holdMouse = true;
 
-    rect = canvas.getBoundingClientRect();
-    
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
+    mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    mouseY = event.clientY - canvas.getBoundingClientRect().top;
 
     mesa.checkObjectClick();
 
 }
 
 function onMouseMove(event) {
-    
-    rect = canvas.getBoundingClientRect();
-    
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
+  
+    mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+    mesa.checkObjectMove();
 }
+
+function onMouseUp(event) {
+    holdMouse = false;
+    mesa.checkObjectRelease();
+}
+
+function onKeyDown(event) {
+    mesa.checkKeyDown(event.code);
+}
+
+
 
 
 function domino() {
@@ -47,6 +56,8 @@ function domino() {
 
     document.addEventListener("mousedown", onMouseClick);
     document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener('keydown', onKeyDown);    
 
 
     // pedras.gerar();

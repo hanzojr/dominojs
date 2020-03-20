@@ -3,6 +3,8 @@ class Mesa {
     jogadores = [];
     pedras = [];
 
+    pedraSelecionada;
+
     // _showPedras = false;
     // _showMousePosition = false;
     // _showPedraPosition = false;
@@ -31,24 +33,36 @@ class Mesa {
     }
 
     checkObjectClick() {
-
-
          for(let i=0;i<28;i++) {
-
-             if(mouseX >= this.pedras[i].posicao.x && 
-                mouseX <= this.pedras[i].posicao.x + this.pedras[i].width &&
-                mouseY >= this.pedras[i].posicao.y && 
-                mouseY <= this.pedras[i].posicao.y + this.pedras[i].height) {
-         
-
-                    this.pedras[i].posicao.y-=30;
+             if(this.pedras[i].click()) {
+                    this.pedraSelecionada = this.pedras[i];
+                    console.log("selecionada: "+this.pedraSelecionada.codigo);
              }
-
          }
-     
+    }
+
+    checkObjectRelease() {
+        console.log("liberada: "+this.pedraSelecionada.codigo);
+        this.pedraSelecionada = null;
+    }
+
+    checkObjectMove() {
+        if(holdMouse)
+            this.pedraSelecionada.posicao = new Ponto(mouseX, mouseY);
 
     }
 
+    checkKeyDown(code) {
+
+        switch(code) {
+            case "Space": 
+                if(this.pedraSelecionada!= null)
+                    this.pedraSelecionada.virar(); 
+                break;
+
+        }
+
+    }
 
     showPedrasDemo() {
         for(let i=0;i<28;i++)
