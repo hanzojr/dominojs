@@ -8,21 +8,42 @@ class Pedra {
     width;
     height;
 
+    codigo;
+    descricao;
+
     tamanho_ponto;
 
     constructor(lado1, lado2) {
         this.lado1 = lado1;
         this.lado2 = lado2;
         this.vertical = true;
+        this.codigo = "["+lado1+"|"+lado2+"]";
         
-        this.posicao = new Ponto();
+        this.posicao = new Ponto(0, 0);
+    }
+
+    pegarDescricao() {
+        if(this.lado1 == this.lado2)
+            return "Carroça de "+this.pegarNomeLado(this.lado1);
+
+        return this.pegarNomeLado(lado1) +" e " + this.pegarNomeLado(lado2);
+
+    }
+
+    pegarNomeLado(_desc) {
+        switch(_desc) {
+            case 1: "Ás"; break;
+            case 2: "Duque"; break;
+            case 3: "Terno"; break;
+            case 4: "Quadra"; break;
+            case 5: "Quina"; break;
+            case 6: "Sena"; break;
+        }
     }
 
 
-    draw(x, y) {
+    draw() {
 
-        this.posicao.x = x;
-        this.posicao.y = y;
 
         let radius = TAMANHO_PEDRA * 0.10;
         this.tamanho_ponto = TAMANHO_PEDRA * 0.05;
