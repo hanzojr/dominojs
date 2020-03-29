@@ -178,7 +178,7 @@ class Mesa {
     preencherPonta() {
         if(this.checkPrimeiraPedraDeitada()) {
 
-            console.log("primeira pedra deitada: "+this.pedraSelecionada.codigo);
+            //console.log("primeira pedra deitada: "+this.pedraSelecionada.codigo);
             this.ponta.cima = this.pedraSelecionada;
             this.ponta.baixo = this.pedraSelecionada;
             this.ponta.esquerda = this.pedraSelecionada;
@@ -403,8 +403,9 @@ class Mesa {
                 this.appendDebugMessage("D: "+this.ponta.direita.codigo); 
                 this.appendDebugMessage("}               "); 
             }    
-            
-  
+
+            this.appendDebugMessage("PONTUACAO: "+this.somarPontuacaoMesa());          
+
 
             context.font = "20px Comic Sans MS";
             context.fillStyle = "yellow";
@@ -421,6 +422,62 @@ class Mesa {
 
     appendDebugMessage(str) {
         this._debug_mensagem.push(str);
+    }
+
+    somarPontuacaoMesa() {
+        var pontos = 0;
+
+        if(this.ponta.carrocaSaida==null)
+            pontos = 0;
+        else {
+            if((this.ponta.carrocaSaida != this.ponta.esquerda) && //para habilitar superior, precisa ter liberado esquerda e direita
+                (this.ponta.carrocaSaida != this.ponta.direita)) {       
+                    
+
+                    if(this.ponta.carrocaSaida != this.ponta.cima)
+                        if(this.ponta.cima.isCarroca())
+                            pontos+=this.ponta.cima.lado1*2;
+                        else
+                            pontos+=this.ponta.cima.lado1;
+
+                    if(this.ponta.carrocaSaida != this.ponta.baixo)
+                        if(this.carrocaSaida != this.ponta.baixo)
+                        if(this.ponta.baixo.isCarroca())
+                            pontos+=this.ponta.baixo.lado2*2;
+                        else
+                            pontos+=this.ponta.baixo.lado2;
+
+
+
+            }
+
+            if((this.ponta.carrocaSaida == this.ponta.esquerda) &&
+                (this.ponta.carrocaSaida == this.ponta.direita)) 
+                    pontos+=this.ponta.esquerda.lado1*2;
+
+            else {
+
+                if(this.carrocaSaida != this.ponta.esquerda)
+                    if(this.ponta.esquerda.isCarroca())
+                        pontos+=this.ponta.esquerda.lado1*2;
+                    else
+                        pontos+=this.ponta.esquerda.lado1;
+
+                if(this.carrocaSaida!=this.ponta.direita)
+                    if(this.ponta.direita.isCarroca())
+                        pontos+=this.ponta.direita.lado2*2;
+                    else
+                        pontos+=this.ponta.direita.lado2;  
+            }
+
+
+                  
+    
+        }
+
+        return pontos;
+
+
     }
 
 
