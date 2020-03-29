@@ -1,4 +1,4 @@
-class Ponto  {
+class Posicao  {
     x;
     y;
     descricao;

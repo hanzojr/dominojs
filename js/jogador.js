@@ -3,4 +3,8 @@ class Jogador {
 
     pedras = [];
 
+    constructor(nome) {
+        this.nome = nome;
+    }
+
 }

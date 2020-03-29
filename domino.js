@@ -1,6 +1,5 @@
-var
-    
-    canvas, context, frames = 0, pedras, pedraClicada = 0, mouseX=100, mouseY=100, holdMouse=false, mesa;
+var 
+    canvas, context, frames = 0, mouseX=100, mouseY=100, holdMouse=false, mesa, console;
 
 // const pedra = {
 //     AS: 'Ás',
@@ -46,6 +45,8 @@ function onResize() {
 
 
 function domino() {
+    onResize(); //carrega o tamanho da página do cliente
+
     canvas = document.createElement("canvas");
     canvas.width = LARGURA;
     canvas.height = ALTURA;
@@ -70,9 +71,6 @@ function domino() {
 
     mesa = new Mesa();
 
-    mesa.showPedrasDemo();
-    mesa.pedras[13].posicao.y -= 300;   
-
 
     run();
 
@@ -88,18 +86,20 @@ function run() {
 
 function refresh() {
     frames++;
-
-
 }
 
 function draw() {
     context.fillStyle = cores.mesa;
     context.fillRect(0, 0, LARGURA, ALTURA);
 
-    mesa.showPedras();
+  //  mesa.showPedras();
 
+    mesa.draw();
 
-    mesa.showConsole();
+    //mesa.showConsole();
+    //mesa.drawMaoJogador();
+
+    //console.draw();
 
     
 
